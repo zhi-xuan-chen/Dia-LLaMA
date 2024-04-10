@@ -1,0 +1,1 @@
+CUDA_VISIBLE_DEVICES=6 python /home/chenzhixuan/Workspace/LLM4CTRG/src/test_iu.py

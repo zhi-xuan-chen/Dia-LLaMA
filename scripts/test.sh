@@ -1,0 +1,1 @@
+CUDA_VISIBLE_DEVICES=3 python /home/chenzhixuan/Workspace/LLM4CTRG/src/test.py
