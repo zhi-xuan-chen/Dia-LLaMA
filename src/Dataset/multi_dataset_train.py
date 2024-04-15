@@ -100,7 +100,7 @@ class multi_dataset_train(Dataset):
             )
             # NOTE: "additoinal_special_tokens" is a type of special token used in tokenizer
             special_token = {
-                "additional_special_tokens": ["<image>", "</image>", "<POS>", "<NEG>"]}
+                "additional_special_tokens": ["<image>", "</image>"]}
             # NOTE: 'max_img_size' is the max number of images in a single input,
             # 'image_num' is the max number of image tokens in a single image
             for i in range(max_img_size):
