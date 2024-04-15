@@ -1,6 +1,6 @@
-experiment_name="vit3d-radfm_perceiver-radfm_llama2-7b-chat-hf_ctr_token_prompt"
+experiment_name="dia-llama"
 
-CUDA_VISIBLE_DEVICES=3,1 torchrun --nproc_per_node=2 /home/chenzhixuan/Workspace/LLM4CTRG/src/train.py \
+CUDA_VISIBLE_DEVICES=1,5 torchrun --nproc_per_node=2 /home/chenzhixuan/Workspace/LLM4CTRG/src/train.py \
     --bf16 True \
     --lang_encoder_path "/data/chenzhixuan/checkpoints/Llama-2-7b-chat-hf" \
     --tokenizer_path "/data/chenzhixuan/checkpoints/Llama-2-7b-chat-hf" \
@@ -8,7 +8,7 @@ CUDA_VISIBLE_DEVICES=3,1 torchrun --nproc_per_node=2 /home/chenzhixuan/Workspace
     --gradient_accumulation_steps 8 \
     --evaluation_strategy "no" \
     --save_strategy "steps" \
-    --save_steps 500 \
+    --save_steps 1000 \
     --save_total_limit 3 \
     --learning_rate 5e-5 \
     --weight_decay 0.0 \
