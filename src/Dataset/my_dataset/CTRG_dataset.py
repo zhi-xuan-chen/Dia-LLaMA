@@ -149,13 +149,13 @@ class CTRG_Dataset(Dataset):
         for i, l in enumerate(cls_labels):
             disease = CONDITIONS[i]
             if l == 1:
-                # state = 'positive'
-                # prompt += f"The \"{disease}\" is {state}. "
-                prompt += "<POS>"
+                state = 'positive'
+                prompt += f"The \"{disease}\" is {state}. "
+                # prompt += "<POS>"
             else:
-                # state = 'negative'
-                # prompt += f"The \"{disease}\" is {state}. "
-                prompt += "<NEG>"
+                state = 'negative'
+                prompt += f"The \"{disease}\" is {state}. "
+                # prompt += "<NEG>"
         
         # guide = "Based on the above image embedding information and some significant key information related to specific diseases, please generate a complete medical report corresponding to CT images. The generated report needs to meet the following requirements. A thorough examination of the anatomical structures is essential. Begin with the thoracic region, assessing the lungs for any abnormalities such as lung parenchyma changes, bronchial abnormalities, or the presence of nodules, masses, or lung lesions. Evaluate the thoracic cavity and chest wall for signs of pleural effusion, pneumothorax, pleural thickening, or rib fractures. Moving to the heart and major blood vessels, assess their morphology and function, noting any abnormalities in cardiac chambers, wall thickness, pericardial effusion, or the diameter and morphology of the aorta and pulmonary arteries. Evaluate the mediastinum for lymph node size, shape, and enlargement, paying attention to any abnormal lymph node enlargement or metastatic involvement. In the abdomen, examine the liver for size, shape, and density, observing for any focal lesions or masses. Assess the kidneys for symmetry, looking for signs of hydronephrosis or renal calculi. Evaluate the thyroid gland for size, shape, and the presence of nodules or other abnormalities. Examine the breasts for any masses or architectural distortions. Lastly, evaluate the brain for any intracranial abnormalities, such as hemorrhages or masses. Examine the brain parenchyma for signs of edema or infarction. In summary, you should examine the anatomical structures of the chest, abdomen, neck, and brain. Document any abnormalities, including the location, size, shape, and density characteristics of lesions or pathologies. Providing a comprehensive report which contains detailed information about the anatomical structures and any abnormalities is essential. "
         guide = "Based on the above visual information and some key abnormal information related to specific diseases, please generate a complete medical report corresponding to this CT image. Providing a comprehensive report which contains detailed information about the anatomical structures and any abnormalities is essential. "

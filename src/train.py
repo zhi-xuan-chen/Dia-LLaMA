@@ -5,9 +5,7 @@ from typing import List, Optional, Tuple, Union
 import transformers
 from My_Trainer.trainer import Trainer
 from dataclasses import dataclass, field
-# from Model.RadFM_ctr_prompt_wo_daa.multimodality_model import MultiLLaMAForCausalLM
 from Model.DiaLLaMA.multimodality_model import MultiLLaMAForCausalLM
-# from Model.RadFM_ctr_token_prompt.multimodality_model import MultiLLaMAForCausalLM
 from datasampler import My_DistributedBatchSampler
 from Dataset.multi_dataset_test_for_close import multi_dataset_close
 from Dataset.multi_dataset_train import multi_dataset_train

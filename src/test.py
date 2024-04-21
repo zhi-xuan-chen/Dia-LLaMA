@@ -6,11 +6,7 @@ import transformers
 from My_Trainer.trainer import Trainer
 from dataclasses import dataclass, field
 from Dataset.multi_dataset_test import multi_dataset_test
-# from Model.RadFM.multimodality_model import MultiLLaMAForCausalLM
-# from Model.RadFM_ctr_prompt.multimodality_model import MultiLLaMAForCausalLM
-# from Model.RadFM_cls_prompt.multimodality_model import MultiLLaMAForCausalLM
-# from Model.RadFM_ctr_prompt_wo_daa.multimodality_model import MultiLLaMAForCausalLM
-from Model.RadFM_ctr_token_prompt.multimodality_model import MultiLLaMAForCausalLM
+from Model.DiaLLaMA.multimodality_model import MultiLLaMAForCausalLM
 from datasampler import My_DistributedBatchSampler
 import torch
 from torch.utils.data import DataLoader
@@ -46,17 +42,6 @@ class ModelArguments:
 class DataArguments:
     Mode: Optional[str] = field(default="Train")
     test_split: Optional[str] = field(default="open")
-
-
-@dataclass
-class TrainingArguments(transformers.TrainingArguments):
-    remove_unused_columns: bool = field(default=False)
-    batch_size_2D: int = field(default=4)
-    batch_size_3D: int = field(default=1)
-    output_dir: Optional[str] = field(
-        default="/data/chenzhixuan/checkpoints/LLM4CTRG/outputs/")
-    cache_dir: Optional[str] = field(default=None)
-    optim: str = field(default="adamw_torch")
 
 
 @dataclass
@@ -121,15 +106,11 @@ def main():
     Test_dataset = multi_dataset_test(
         text_tokenizer=model_args.tokenizer_path
     )
-    # Test_dataset = Qformer_multi_dataset_test(
-    #     text_tokenizer=model_args.tokenizer_path
-    # )
-    
 
     Test_dataloader = DataLoader(
         Test_dataset,
         batch_size=1,
-        num_workers=1,
+        num_workers=4,
         pin_memory=True,
         sampler=None,
         shuffle=True,
@@ -144,21 +125,14 @@ def main():
         lang_model_path=model_args.lang_encoder_path,
     )
     ckpt = torch.load(
-        '/data/chenzhixuan/checkpoints/LLM4CTRG/outputs/vit3d-radfm_perceiver-radfm_llama2-7b-chat-hf_ctr_token_prompt/checkpoint-2000/pytorch_model.bin', map_location='cpu')
-    # ckpt.pop('embedding_layer.figure_token_weight')
+        '/data/chenzhixuan/checkpoints/Dia-LLaMA/dia-llama/checkpoint-2000/pytorch_model.bin', map_location='cpu')
     model.load_state_dict(ckpt, strict=True)
     model = model.cuda()
 
-    # device_map = infer_auto_device_map(
-    #     model, no_split_module_classes=['LlamaDecoderLayer'])
-    # device_map['lang_model.base_model.model.model.embed_tokens'] = 1
-
-    # model = load_checkpoint_and_dispatch(
-    #     model, checkpoint='/data/chenzhixuan/checkpoints/LLM4CTRG/outputs/test/checkpoint-1000/pytorch_model.bin', device_map=device_map)
     print("load ckpt")
 
     model.eval()
-    with open('/home/chenzhixuan/Workspace/LLM4CTRG/results/' + 'vit3d-radfm_perceiver-radfm_llama2-7b-chat-hf_ctr_token_prompt'+'.csv', mode='w') as outfile:
+    with open('/home/chenzhixuan/Workspace/Dia-LLaMA/results/' + 'dia-llama'+'.csv', mode='w') as outfile:
         writer = csv.writer(outfile)
         writer.writerow(
             ["ID", "Question", "Ground Truth", "Pred", "GT_labels", "Pred_ctr_labels", "Pred_cls_labels", 'belong_to'])
@@ -169,10 +143,6 @@ def main():
             guide = sample['guide'][0]
             cls_labels = sample['cls_labels'][0]
             belong_to = sample['belong_to'][0]
-            # img_pp = sample['img_path']
-            # lang_x = Test_dataset.text_tokenizer(
-            #     question, max_length=2048, truncation=True, return_tensors="pt"
-            # )['input_ids'].to('cuda')
 
             vision_x = sample["vision_x"].to('cuda')
 
