@@ -6,7 +6,7 @@ gt_dict = {}
 pred_dict = {}
 
 # 打开CSV文件
-with open('/home/chenzhixuan/Workspace/LLM4CTRG/results/radfm_llama7B_mimic.csv', 'r') as file:
+with open('/home/chenzhixuan/Workspace/Dia-LLaMA/results/dia-llama.csv', 'r') as file:
     # 创建CSV读取器
     reader = csv.reader(file)
 

@@ -207,7 +207,7 @@ class MultiLLaMAForCausalLM(nn.Module):
             input_embedding = self.embedding_layer(vision_x=vision_x, text_input=lang_x, key_words_query=None)
             
             generation = self.lang_model.generate(
-                inputs_embeds=input_embedding, max_new_tokens=200, top_k=50)
+                inputs_embeds=input_embedding, max_new_tokens=400, top_k=50)
             report = self.text_tokenizer.batch_decode(generation, skip_special_tokens=True)
             
         return questions[0], report[0], cls_labels[0], ctr_labels[0]

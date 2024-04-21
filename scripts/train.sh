@@ -1,6 +1,6 @@
 experiment_name="dia-llama"
 
-CUDA_VISIBLE_DEVICES=1,5 torchrun --nproc_per_node=2 /home/chenzhixuan/Workspace/LLM4CTRG/src/train.py \
+CUDA_VISIBLE_DEVICES=1,3 torchrun --nproc_per_node=2 --master_port=25384 /home/chenzhixuan/Workspace/Dia-LLaMA/src/train.py \
     --bf16 True \
     --lang_encoder_path "/data/chenzhixuan/checkpoints/Llama-2-7b-chat-hf" \
     --tokenizer_path "/data/chenzhixuan/checkpoints/Llama-2-7b-chat-hf" \
@@ -16,6 +16,6 @@ CUDA_VISIBLE_DEVICES=1,5 torchrun --nproc_per_node=2 /home/chenzhixuan/Workspace
     --lr_scheduler_type "constant_with_warmup" \
     --dataloader_num_workers 8 \
     --run_name $experiment_name \
-    --output_dir "/data/chenzhixuan/checkpoints/LLM4CTRG/outputs/$experiment_name" \
-    --deepspeed "/home/chenzhixuan/Workspace/LLM4CTRG/ds_configs/stage2.json" \
+    --output_dir "/data/chenzhixuan/checkpoints/Dia-LLaMA/$experiment_name" \
+    --deepspeed "/home/chenzhixuan/Workspace/Dia-LLaMA/ds_configs/stage2.json" \
     --logging_steps 1

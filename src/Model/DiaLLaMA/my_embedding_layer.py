@@ -108,7 +108,7 @@ class MyEmbedding(nn.Module):
         # self.fc.load_state_dict(state_dict['fc'])
         
         # used to classify the disease category
-        self.prototype = nn.Parameter(torch.randn((14, 1024)), requires_grad=True) # s increase to 2 
+        self.prototype = nn.Parameter(torch.randn((14, 1024)), requires_grad=True) 
         # self.cls_head = nn.Linear(self.vis_dim, 14*4)
         self.group_cls_head = nn.ModuleList([
             nn.Linear(self.vis_dim, 2) for _ in range(14)
