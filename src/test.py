@@ -113,7 +113,7 @@ def main():
         num_workers=4,
         pin_memory=True,
         sampler=None,
-        shuffle=True,
+        shuffle=False,
         collate_fn=None,
         drop_last=False,
     )
