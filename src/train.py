@@ -7,7 +7,6 @@ from My_Trainer.trainer import Trainer
 from dataclasses import dataclass, field
 from Model.DiaLLaMA.multimodality_model import MultiLLaMAForCausalLM
 from datasampler import My_DistributedBatchSampler
-from Dataset.multi_dataset_test_for_close import multi_dataset_close
 from Dataset.multi_dataset_train import multi_dataset_train
 from Dataset.multi_dataset_val import multi_dataset_val
 import numpy as np
