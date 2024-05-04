@@ -44,10 +44,10 @@ CONDITIONS = [
 ]
 
 SCORES = [
-'<BLA>',
-'<POS>',
-'<NEG>',
-'<UNC>'
+    '<BLA>',
+    '<POS>',
+    '<NEG>',
+    '<UNC>'
 ]
 
 Token_to_Text = {
@@ -63,7 +63,6 @@ class CTRG_Dataset(Dataset):
     Args:
         Dataset (_type_): _description_: modality asked task formulated as vqa task for Radiopaedia dataset
         csv_path (_type_): path to csv file
-        prompt_json_file (_type_): path to json file containing caption prompts
     Output:
         Dict: {
              "image_dict": [{"image": image, "position": {"question": 0}}], # image is a tensor of shape [c,w,h,d] like, [3,512,512,4], position is a dict, random choice of 0 or len(question)
@@ -72,20 +71,16 @@ class CTRG_Dataset(Dataset):
             }
     """
 
-    def __init__(self, data_dir, data_json, split, prompt_json_file, down_sample_ratio=5):
+    def __init__(self, data_dir, data_json, label_path, split):
         self.data_dir = data_dir
         self.split = split
 
         with open(data_json, 'r') as f:
             data_dict = json.load(f)
         self.data_list = data_dict[split]
-        self.down_sample_ratio = down_sample_ratio
 
-        with open(prompt_json_file, 'r') as f:
-            self.caption_prompts = json.load(f)['caption_prompt']
+        self.label = self._load_label(label_path)
 
-        self.label = self._load_label('/home/chenzhixuan/Workspace/M2KT/data_csv/CTRG_finding_labels.csv')
-    
     def _load_label(self, label_path):
         label_dict = {}
 
@@ -97,7 +92,7 @@ class CTRG_Dataset(Dataset):
             label_dict[idx] = label
 
         return label_dict
-        
+
     def resize_image(self, image):
         if len(image.shape) == 3:
             if image.shape[0] < image.shape[2]:
@@ -109,27 +104,27 @@ class CTRG_Dataset(Dataset):
             image = image[np.newaxis, :, :, :]
             image = np.concatenate([image, image, image], axis=0)
         else:
-            print('image shape',image.shape)
+            print('image shape', image.shape)
 
         if image.shape[-1] > 64:
             image = ndimage.zoom(
                 image, (3/image.shape[0], 512/image.shape[1], 512/image.shape[2], 64/image.shape[3]), order=0)
         else:
-            print('image shape',image.shape)
+            print('image shape', image.shape)
             image = ndimage.zoom(
                 image, (3/image.shape[0], 512/image.shape[1], 512/image.shape[2], 64/image.shape[3]), order=0)
-            
+
         return image
 
     def __len__(self):
-        return math.ceil(len(self.data_list)/self.down_sample_ratio)
+        return len(self.data_list)
 
     def __getitem__(self, index):
-        index = (self.down_sample_ratio*index + random.randint(0,
-                 self.down_sample_ratio-1)) % len(self.data_list)
-        image_id = self.data_list[index]['id'] 
-        cls_labels = torch.tensor(self.label[int(image_id)], dtype=torch.float32).long()
-        img_path = os.path.normpath(os.path.join(self.data_dir, str(image_id)+'.nii.gz'))
+        image_id = self.data_list[index]['id']
+        cls_labels = torch.tensor(
+            self.label[int(image_id)], dtype=torch.float32).long()
+        img_path = os.path.normpath(os.path.join(
+            self.data_dir, str(image_id)+'.nii.gz'))
 
         itk_image = sitk.ReadImage(img_path)
         image = sitk.GetArrayFromImage(itk_image)
@@ -152,16 +147,16 @@ class CTRG_Dataset(Dataset):
             else:
                 state = 'negative'
                 prompt += f"The \"{disease}\" is {state}. "
-        
+
         guide = "Based on the above visual information and some key abnormal information related to specific diseases, please generate a complete medical report corresponding to this CT image. Providing a comprehensive report which contains detailed information about the anatomical structures and any abnormalities is essential. "
         question = prompt + guide
-        
+
         image_dict = {
-                "image": image,
-                "position": {
-                    "question": 0
-                }
+            "image": image,
+            "position": {
+                "question": 0
             }
+        }
 
         return {
             "image_id": image_id,

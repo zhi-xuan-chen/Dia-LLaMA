@@ -12,7 +12,7 @@ import torch.nn.functional as F
 import numpy as np
 from transformers import AutoModelForCausalLM, AutoTokenizer, LlamaTokenizer
 
-CONDITIONS = [
+DISEASES = [
     'enlarged cardiomediastinum',
     'cardiomegaly',
     'lung opacity',
@@ -28,21 +28,6 @@ CONDITIONS = [
     'support devices',
     'no finding',
 ]
-
-SCORES = [
-'<BLA>',
-'<POS>',
-'<NEG>',
-'<UNC>'
-]
-
-Token_to_Text = {
-    '<BLA>': 'blank',
-    '<POS>': 'positive',
-    '<NEG>': 'negative',
-    '<UNC>': 'uncertain'
-}
-
 
 
 class MultiLLaMAForCausalLM(nn.Module):
@@ -77,11 +62,6 @@ class MultiLLaMAForCausalLM(nn.Module):
             lang_model_path,
         )
         self.lang_model = self.lang_model.half()
-        # # load partial weights from llava-med
-        # lang_ckpt = torch.load(
-        #     '/jhcnas1/chenzhixuan/checkpoints/LLM4CTRG/llava_partial_weights.pth', map_location='cpu')
-        # self.lang_model.load_state_dict(lang_ckpt, strict=False)
-        # print('load partial weights from llava-med')
 
         # use lora to wrap the model
         peft_config = LoraConfig(
@@ -105,79 +85,32 @@ class MultiLLaMAForCausalLM(nn.Module):
         self.voc_size = 32000
 
     def forward(self, lang_x, vision_x, cls_labels, attention_mask, labels, loss_reweight, key_words_query):
-        if labels.shape == lang_x.shape:
-            B = vision_x.shape[0]
-            self.embedding_layer.flag = 'Text'
-            # lang_x = lang_x.to(vision_x.dtype)
-            # lang_x = lang_x + torch.zeros(1, dtype=lang_x.dtype, device=lang_x.device, requires_grad=True)
-            # vision_x = vision_x + torch.zeros(1, dtype=vision_x.dtype, device=vision_x.device, requires_grad=True)
-            # input_embedding = checkpoint(self.embedding_layer, lang_x, vision_x)
-            input_embedding, cls_logits, loss_match, sim = self.embedding_layer(
-                 vision_x, cls_labels, lang_x,  key_words_query, mode='train')   # ,loss_matching
-            output = self.lang_model(
-                inputs_embeds=input_embedding, attention_mask=attention_mask, labels=labels)
-            logits = output['logits']
+        B = vision_x.shape[0]
 
-            targets = torch.zeros(B*14).to(sim.device)
-            ctr_loss = F.cross_entropy(sim, targets.long())
+        input_embedding, sim = self.embedding_layer(
+                vision_x, cls_labels, lang_x,  key_words_query, mode='train')  
+        output = self.lang_model(
+            inputs_embeds=input_embedding, attention_mask=attention_mask, labels=labels)
+        logits = output['logits']
 
-            cls_loss = self.loss_function(cls_logits, cls_labels)
+        targets = torch.zeros(B*14).to(sim.device)
+        ctr_loss = F.cross_entropy(sim, targets.long())
 
-            loss_reg = None
-            if labels is not None:
-                # Shift so that tokens < n predict n
-                shift_logits = logits[..., :-1, :].contiguous()
-                shift_labels = labels[..., 1:].contiguous()
-                shift_loss_reweight = loss_reweight[..., 1:].contiguous()
-                # Flatten the tokens
-                loss_fct = CrossEntropyLoss(reduction='none')
-                shift_logits = shift_logits.view(-1, self.voc_size)
-                shift_labels = shift_labels.view(-1)
-                shift_loss_reweight = shift_loss_reweight.view(-1)
-                # Enable model parallelism
-                shift_labels = shift_labels.to(shift_logits.device)
-                shift_loss_reweight = shift_loss_reweight.to(
-                    shift_logits.device)
-                loss_reg = loss_fct(shift_logits, shift_labels)
-                loss_reg = torch.sum(
-                    shift_loss_reweight*loss_reg)/torch.sum(shift_loss_reweight)
-            loss = loss_reg
-            if loss_match != None:
-                loss = 0.8*loss + 0.2*loss_match
+        # only rank 0 print
+        if torch.distributed.get_rank() == 0:
+            print('lm_oss:', output['loss'].item(), 'ctr_loss:', ctr_loss.item())
 
-            logits = output['logits'][..., :-1, :].contiguous().detach()
-            total = len(labels)
-            predictions = torch.argmax(logits, dim=-1)
-            labels = labels[..., 1:].contiguous()
-            Acc = torch.sum(torch.all(torch.logical_or(
-                predictions == labels, labels == -100), dim=-1))
-            Accuracy = Acc / total
-
-            # only rank 0 print
-            if torch.distributed.get_rank() == 0:
-                print('lm_oss:', output['loss'].item(), 'cls_loss:', cls_loss.item(), 'ctr_loss:', ctr_loss.item())
-
-            return dict(
-                # loss_reg = loss_reg,
-                # loss_matching = loss_matching,
-                logits=Accuracy,
-                loss=output['loss']+ctr_loss*4,
-            )
+        return dict(
+            loss=output['loss']+ctr_loss*4,
+        )
 
     def generate(self, question, guide, vision_x):
-        self.embedding_layer.flag = 'Text'
         with torch.no_grad():
-            cls_preds, all_sim = self.embedding_layer(vision_x=vision_x, mode='cls')
-            cls_preds = F.softmax(cls_preds, dim=1)
-            cls_preds_logits = cls_preds[:, 1, :14]
-            cls_labels = torch.argmax(cls_preds, dim=1).cpu().numpy().tolist() # B, 14
+            all_sim = self.embedding_layer(vision_x=vision_x, mode='cls')
 
             all_sim_sort, indice = torch.sort(all_sim, dim=2, descending=True)
             indice = indice.to(all_sim.device)
             ctr_labels = torch.where(indice[:,:,0]==0, torch.ones(1,14).to(all_sim.device), torch.zeros(1,14).to(all_sim.device))
-            # all_sim = all_sim.reshape(-1, 14, 2, 10)
-            # all_sim = all_sim.sum(dim=-1)
-            # ctr_labels = torch.where(all_sim[:,:,0] > all_sim[:,:,1], torch.ones(1,14).to(all_sim.device), torch.zeros(1,14).to(all_sim.device))
 
             ctr_labels = ctr_labels.long().cpu().numpy().tolist()
 
@@ -185,7 +118,7 @@ class MultiLLaMAForCausalLM(nn.Module):
             for i in range(len(ctr_labels)):
                 prompt = ""
                 for j, l in enumerate(ctr_labels[i]):
-                    disease = CONDITIONS[j]
+                    disease = DISEASES[j]
                     if l == 1:
                         state = 'positive'
                         prompt += f"The \"{disease}\" is {state}. "
@@ -210,4 +143,4 @@ class MultiLLaMAForCausalLM(nn.Module):
                 inputs_embeds=input_embedding, max_new_tokens=300, top_k=50)
             report = self.text_tokenizer.batch_decode(generation, skip_special_tokens=True)
             
-        return questions[0], report[0], cls_labels[0], ctr_labels[0]
+        return questions[0], report[0]
