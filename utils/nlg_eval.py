@@ -1,5 +1,5 @@
 import csv
-from metrics import compute_scores
+from metrics_nlg import compute_scores
 
 # 定义两个空字典，用于存储提取的信息
 gt_dict = {}

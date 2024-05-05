@@ -137,13 +137,6 @@ def main():
         text_tokenizer_path=model_args.tokenizer_path,
     )
 
-    # loader = torch.utils.data.DataLoader(
-    #     Train_dataset, batch_size=1, shuffle=False, num_workers=0, collate_fn=DataCollator())
-    # for batch in tqdm.tqdm(loader):
-    #     # 将张量保存为 NIfTI 文件
-    #     model(**batch)
-    #     pass
-
     trainer = Trainer(model=model,
                       train_dataset=Train_dataset,
                       eval_dataset=Eval_dataset,
