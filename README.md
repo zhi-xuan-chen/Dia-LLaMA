@@ -14,11 +14,9 @@ pip install -r requirements
 conda activate dia-llama
 ```
 
-2. Once the virtual environment is created, you should download the pretrained weight from the huggingface.
+2. Once the virtual environment is created, you should download the model weight from the huggingface repository [Dia-LLaMA](https://huggingface.co/Trusure/Dia-LLaMA/tree/main).
 
-3. Finally, you should prepare the dataset. You can also download them from huggingface. 
-
-
+3. And then, you should prepare the dataset. You can also download them from huggingface.
 
 ## Training
 

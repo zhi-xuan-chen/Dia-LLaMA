@@ -7,7 +7,7 @@ from metrics_clinical import CheXbertMetrics
 
 def main():
     chexbert_metrics = CheXbertMetrics('/home/chenzhixuan/Workspace/MRG_baseline/checkpoints/stanford/chexbert/chexbert.pth', 16, 'cpu')
-    report_path = "/home/chenzhixuan/Workspace/Dia-LLaMA/results/dia-llama_v1.csv"
+    report_path = "/home/chenzhixuan/Workspace/Dia-LLaMA/results/dia-llama.csv"
     report_data = pd.read_csv(report_path)
 
     gt_list = report_data['Ground Truth'].tolist()

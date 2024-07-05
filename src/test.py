@@ -72,7 +72,7 @@ def main():
         lang_model_path=model_args.lang_encoder_path,
     )
     ckpt = torch.load(
-        '/jhcnas1/chenzhixuan/checkpoints/Dia-LLaMA/dia-llama/checkpoint-2000/pytorch_model.bin', map_location='cpu')
+        '/home/chenzhixuan/Workspace/Dia-LLaMA/pretrained/pytorch_model.bin', map_location='cpu')
     model.load_state_dict(ckpt, strict=True)
     model = model.cuda()
 

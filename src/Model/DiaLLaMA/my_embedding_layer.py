@@ -43,9 +43,9 @@ class MyEmbedding(nn.Module):
         )
 
         # load pretrained vision encoder from RadFM
-        vit3d_ckpt = torch.load(
-            '/data/chenzhixuan/checkpoints/LLM4CTRG/RadFM_vit3d.pth', map_location='cpu')
-        self.vision_encoder.load_state_dict(vit3d_ckpt, strict=True)
+        # vit3d_ckpt = torch.load(
+        #     '/data/chenzhixuan/checkpoints/LLM4CTRG/RadFM_vit3d.pth', map_location='cpu')
+        # self.vision_encoder.load_state_dict(vit3d_ckpt, strict=True)
 
         # frozen the vision encoder
         # for param in self.vision_encoder.parameters():
@@ -57,9 +57,9 @@ class MyEmbedding(nn.Module):
             dim=self.vis_dim, num_latents=perceiver_num)
         self.fc = nn.Linear(self.vis_dim, self.embedding_dim)
         # load pretrained perceiver and fc from RadFM
-        state_dict = torch.load(
-            '/data/chenzhixuan/checkpoints/LLM4CTRG/RadFM_perceiver_fc.pth', map_location='cpu')
-        self.perceiver.load_state_dict(state_dict['perceiver'])
+        # state_dict = torch.load(
+        #     '/data/chenzhixuan/checkpoints/LLM4CTRG/RadFM_perceiver_fc.pth', map_location='cpu')
+        # self.perceiver.load_state_dict(state_dict['perceiver'])
         # self.fc.load_state_dict(state_dict['fc'])
 
         # used to classify the disease category
