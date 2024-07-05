@@ -6,7 +6,7 @@ from metrics_clinical import CheXbertMetrics
 
 
 def main():
-    chexbert_metrics = CheXbertMetrics('/home/chenzhixuan/Workspace/MRG_baseline/checkpoints/stanford/chexbert/chexbert.pth', 16, 'cpu')
+    chexbert_metrics = CheXbertMetrics('/home/chenzhixuan/Workspace/MRG_baseline/checkpoints/stanford/chexbert/chexbert.pth', 16, 'cpu') #NOTE: change with your chexbert model path
     report_path = "/home/chenzhixuan/Workspace/Dia-LLaMA/results/dia-llama.csv"
     report_data = pd.read_csv(report_path)
 

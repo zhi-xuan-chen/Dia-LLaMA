@@ -137,6 +137,10 @@ def main():
         text_tokenizer_path=model_args.tokenizer_path,
     )
 
+    # load model weights
+    ckpt = torch.load('pytorch_model.bin', map_location='cpu')
+    model.load_state_dict(ckpt, strict=True)
+
     trainer = Trainer(model=model,
                       train_dataset=Train_dataset,
                       eval_dataset=Eval_dataset,
