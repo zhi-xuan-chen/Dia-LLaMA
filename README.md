@@ -14,7 +14,7 @@ pip install -r requirements
 conda activate dia-llama
 ```
 
-2. Once the virtual environment is created, you should download the model weight `pytorch_model.bin` from the huggingface repository [Dia-LLaMA](https://huggingface.co/Trusure/Dia-LLaMA/tree/main). Additionally, you need prepare the model and tokenizer of LLaMA2 from [here](hhttps://huggingface.co/meta-llama/Llama-2-7b-chat-hf).
+2. Once the virtual environment is created, you should download the model weight `pytorch_model.bin` from the huggingface repository [Dia-LLaMA](https://huggingface.co/Trusure/Dia-LLaMA/tree/main). Additionally, you need prepare the model and tokenizer of LLaMA2-7B from [here](https://huggingface.co/meta-llama/Llama-2-7b-chat-hf).
 
 3. And then, you should prepare the `CTRG-Chest-548K_volume` dataset. This involves converting the original JPG format images into the NII.GZ format. The original dataset can be found in [CTRG](https://github.com/tangyuhao2016/CTRG). You can also download the converted dataset from our huggingface repository [CTRG-Chest-548K_volume](https://huggingface.co/datasets/Trusure/CTRG-Chest-548K_volume).
 

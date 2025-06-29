@@ -89,7 +89,7 @@ class dataset_test(Dataset):
 
         # CTRG
         ctrg_dataset = CTRG_Dataset(
-            data_dir='/data/chenzhixuan/data/CTRG/Chest_new_1_volume/',
+            data_dir='/data/chenzhixuan/data/CTRG/CTRG-Chest-548K_volume/',
             data_json='/home/chenzhixuan/Workspace/Dia-LLaMA/src/Dataset/my_dataset/annotation.json',
             label_path='/home/chenzhixuan/Workspace/Dia-LLaMA/src/Dataset/my_dataset/CTRG_finding_labels.csv',
             split='test',

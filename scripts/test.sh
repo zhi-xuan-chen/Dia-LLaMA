@@ -1,1 +1,1 @@
-CUDA_VISIBLE_DEVICES=1 python /home/chenzhixuan/Workspace/Dia-LLaMA/src/test.py
+CUDA_VISIBLE_DEVICES=4 python /home/chenzhixuan/Workspace/Dia-LLaMA/src/test.py

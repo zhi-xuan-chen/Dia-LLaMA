@@ -1,6 +1,6 @@
-experiment_name="dia-llama"
+experiment_name="dia-llama_v0629"
 
-CUDA_VISIBLE_DEVICES=1,4 torchrun --nproc_per_node=2 --master_port=25384 /home/chenzhixuan/Workspace/Dia-LLaMA/src/train.py \
+CUDA_VISIBLE_DEVICES=4 torchrun --nproc_per_node=1 --master_port=25380 /home/chenzhixuan/Workspace/Dia-LLaMA/src/train.py \
     --bf16 True \
     --lang_encoder_path "/data/chenzhixuan/checkpoints/Llama-2-7b-chat-hf" \
     --tokenizer_path "/data/chenzhixuan/checkpoints/Llama-2-7b-chat-hf" \

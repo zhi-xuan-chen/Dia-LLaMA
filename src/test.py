@@ -35,7 +35,6 @@ class ModelArguments:
         default="/data/chenzhixuan/checkpoints/Llama-2-7b-chat-hf")
     tokenizer_path: str = field(default="/data/chenzhixuan/checkpoints/Llama-2-7b-chat-hf",
                                 metadata={"help": "Path to the tokenizer data."})
-    # vision_encoder_path: str = field(default='/home/cs/leijiayu/wuchaoyi/multi_modal/src/PMC-CLIP/checkpoint.pt', metadata={"help": "Path to the vision_encoder."})
 
 
 @dataclass
@@ -72,7 +71,7 @@ def main():
         lang_model_path=model_args.lang_encoder_path,
     )
     ckpt = torch.load(
-        '/home/chenzhixuan/Workspace/Dia-LLaMA/pretrained/pytorch_model.bin', map_location='cpu')
+        '/jhcnas1/chenzhixuan/checkpoints/Dia-LLaMA/Dia-LLaMA/pytorch_model.bin', map_location='cpu')
     model.load_state_dict(ckpt, strict=True)
     model = model.cuda()
 

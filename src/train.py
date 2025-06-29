@@ -138,8 +138,9 @@ def main():
     )
 
     # load model weights
-    ckpt = torch.load('pytorch_model.bin', map_location='cpu')
+    ckpt = torch.load('/jhcnas1/chenzhixuan/checkpoints/Dia-LLaMA/Dia-LLaMA/pytorch_model.bin', map_location='cpu')
     model.load_state_dict(ckpt, strict=True)
+    print("Model weights loaded successfully")
 
     trainer = Trainer(model=model,
                       train_dataset=Train_dataset,
